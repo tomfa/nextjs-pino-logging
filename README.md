@@ -1,34 +1,58 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## Getting Started
 
-First, run the development server:
+## [NextJS](https://nextjs.org/) logging using [Pino](https://github.com/pinojs/pino)
+
+> Structured logging with request-id + custom context data
+
+This repo demonstrates one solution to structured logging in NextJS (compatible with NodeJS middlewares)
+
+### API logging
+
+- `userId` is extracted from `req.user` or JWT token in `Authorization` header.
+- `reqId` is forwarded from `X-Request-Id` or generated if not present
+- `url`, `method`, `path`, `query` is extracted from requests
+- `serviceName` and `env` set in [logger/index.tx](https://github.com/tomfa/nextjs-pino-logging/blob/master/logger/index.tsx)
+- Additional fields (`action`/`domain`) set by caller
+
+![API logging with pino-pretty](./docs/system-log.png)
+
+_Example: [pages/api/hello.tsx](https://github.com/tomfa/nextjs-pino-logging/blob/master/pages/api/hello.tsx)_ – the output above is formatted with [`pino-pretty`](https://github.com/pinojs/pino-pretty).
+
+```ts
+const handler = baseHandler().get((req, res) => {
+  const user = { id: "123", name: "John Doe " };
+  Logger.info("Hi there", {
+    action: "USER_LOGIN",
+    domain: "AUTH",
+  });
+
+  res.status(200).json(user);
+});
+```
+
+
+### Browser logging
+
+When logger is imported in browser, output will be displayed in console. 
+
+![Browser logging](./docs/browser-log.png)
+
+_Example: [pages/index.tsx](https://github.com/tomfa/nextjs-pino-logging/blob/master/pages/index.tsx)_
+
+```ts
+Logger.info('Something meaningful happened')
+Logger.warning('I do not like this', { action: 'VIEW_PAGE'})
+Logger.error('Auch, this will break', { error: new Error('Something went wrong')})
+```
+
+### Local setup
 
 ```bash
-npm run dev
-# or
+yarn
 yarn dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
-
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
-
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- Visit [http://localhost:3000/api/hello?query=value](http://localhost:3000/api/hello?query=value) to see API logging
+- Visit [http://localhost:3000/api/error](http://localhost:3000/api/error) to see API error handling and logging
+- Visit [http://localhost:3000/](http://localhost:3000/) to see browser logging in console
+ 

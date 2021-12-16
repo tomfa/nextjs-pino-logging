@@ -11,7 +11,7 @@ function handler(
   // const user = createNewUser();
   const user = { id: '123', name: 'John Doe '}
 
-  Logger.info('info', {
+  Logger.info('Hi there', {
     action: 'USER_LOGIN',
     domain: 'AUTH',
     customerId: user.id,

@@ -1,9 +1,14 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
+import Logger from '../logger'
 import styles from '../styles/Home.module.css'
 
 const Home: NextPage = () => {
+  Logger.debug('Just checking something')
+  Logger.info('Something meaningful happened')
+  Logger.warning('I do not like this', { action: 'VIEW_PAGE'})
+  Logger.error('Auch, this will break', { error: new Error('Something went wrong')})
   return (
     <div className={styles.container}>
       <Head>

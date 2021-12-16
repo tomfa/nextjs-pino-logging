@@ -47,15 +47,24 @@ class PinoService {
 
   private saveLogRecord(
     message: string,
-    data: LogContext = {},
+    data?: LogContext,
     level: LogLevel = "info"
   ) {
+    const isBrowser = typeof window !== 'undefined';
+    if (isBrowser) {
+      if (data) {
+        this.logger[level](message, data)
+      } else {
+        this.logger[level](message)
+      }
+      return
+    }
     const context = getHttpContext();
     this.logger[level]({
       message: message,
       serviceName: this.serviceName,
       env: this.env,
-      context: { ...data, ...context },
+      context: { ...(data || {}), ...context },
     });
   }
 }

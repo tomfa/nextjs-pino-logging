@@ -1,22 +1,17 @@
-import type { NextApiRequest, NextApiResponse } from "next";
-import { withMiddlewares } from "../../middlewares/withMiddlewares";
 import Logger from "../../logger";
+import handler from "../../middlewares/requestHandler";
 
-function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<{
-    name: string;
-  }>
-) {
+type HelloResponse = { id: string, name: string }
+const helloHandler = handler<HelloResponse>().get((req, res) => {
   // const user = createNewUser();
-  const user = { id: '123', name: 'John Doe '}
-
-  Logger.info('Hi there', {
-    action: 'USER_LOGIN',
-    domain: 'AUTH',
+  const user = { id: "123", name: "John Doe " };
+  Logger.info("Hi there", {
+    action: "USER_LOGIN",
+    domain: "AUTH",
     customerId: user.id,
-  })
-  res.status(200).json(user);
-}
+  });
 
-export default withMiddlewares(handler);
+  res.status(200).json(user);
+});
+
+export default helloHandler;

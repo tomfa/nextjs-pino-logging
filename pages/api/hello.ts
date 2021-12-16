@@ -1,13 +1,22 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import type { NextApiRequest, NextApiResponse } from 'next'
+import type { NextApiRequest, NextApiResponse } from "next";
+import { withMiddlewares } from "../../middlewares/withMiddlewares";
+import Logger from "../../logger";
 
-type Data = {
-  name: string
-}
-
-export default function handler(
+function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Data>
+  res: NextApiResponse<{
+    name: string;
+  }>
 ) {
-  res.status(200).json({ name: 'John Doe' })
+  // const user = createNewUser();
+  const user = { id: '123', name: 'John Doe '}
+
+  Logger.info('info', {
+    action: 'USER_LOGIN',
+    domain: 'AUTH',
+    customerId: user.id,
+  })
+  res.status(200).json(user);
 }
+
+export default withMiddlewares(handler);
